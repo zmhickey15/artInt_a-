@@ -30,17 +30,6 @@ class State{
 /////////
 void generatekids( State *start){
       
-      /*State *child = new State();
-      child->state[0][0] = start->state[0][0];
-      child->state[0][1] = start->state[0][1];
-      child->state[0][2] = start->state[0][2];
-      child->state[1][0] = start->state[1][0];
-      child->state[1][1] = start->state[1][1];
-      child->state[1][2] = start->state[1][2];
-      child->state[2][0] = start->state[2][0];
-      child->state[2][1] = start->state[2][1];
-      child->state[2][2] = start->state[2][2];
-*/
       /// find the 0 pos k + i
       int blankRow;
       int blankCol;
