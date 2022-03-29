@@ -21,7 +21,7 @@ class State{
     child.push_back(kid);
     
   }
-  State* get_child(){
+  State* get_child(){     
       return child.back();
   };
 };
@@ -40,7 +40,10 @@ void generatekids( State *start){
             blankCol = i;
           }
       //if +1 or -1 works swap 
+      cout <<endl <<"row: "<<blankRow << endl <<"col: "<<blankCol;
       if( blankCol + 1 < 3){
+        cout<<"1";
+
         State *child = new State();
         child->state[0][0] = start->state[0][0];
         child->state[0][1] = start->state[0][1];
@@ -56,6 +59,63 @@ void generatekids( State *start){
         child->state[blankRow][blankCol+1] = 0;
         start->add_child(child);
       }
+      if( blankCol - 1 > -1){
+        State *child = new State();
+         cout<<"2";
+        child->state[0][0] = start->state[0][0];
+        child->state[0][1] = start->state[0][1];
+        child->state[0][2] = start->state[0][2];
+        child->state[1][0] = start->state[1][0];
+        child->state[1][1] = start->state[1][1];
+        child->state[1][2] = start->state[1][2];
+        child->state[2][0] = start->state[2][0];
+        child->state[2][1] = start->state[2][1];
+        child->state[2][2] = start->state[2][2];
+        
+        child->state[blankRow][blankCol] = start->state[blankRow][blankCol-1];
+        child->state[blankRow][blankCol-1] = 0;
+        start->add_child(child);
+
+      }
+      if( blankRow + 1 < 3){
+        State *child = new State();
+         cout<<"3";
+        child->state[0][0] = start->state[0][0];
+        child->state[0][1] = start->state[0][1];
+        child->state[0][2] = start->state[0][2];
+        child->state[1][0] = start->state[1][0];
+        child->state[1][1] = start->state[1][1];
+        child->state[1][2] = start->state[1][2];
+        child->state[2][0] = start->state[2][0];
+        child->state[2][1] = start->state[2][1];
+        child->state[2][2] = start->state[2][2];
+        
+        child->state[blankRow][blankCol] = start->state[blankRow+1][blankCol];
+        child->state[blankRow][blankCol+1] = 0;
+        start->add_child(child);
+        
+
+      }
+      if( blankRow - 1 > -1){
+        State *child = new State();
+         cout<<"4";
+        child->state[0][0] = start->state[0][0];
+        child->state[0][1] = start->state[0][1];
+        child->state[0][2] = start->state[0][2];
+        child->state[1][0] = start->state[1][0];
+        child->state[1][1] = start->state[1][1];
+        child->state[1][2] = start->state[1][2];
+        child->state[2][0] = start->state[2][0];
+        child->state[2][1] = start->state[2][1];
+        child->state[2][2] = start->state[2][2];
+        
+        child->state[blankRow][blankCol] = start->state[blankRow][blankCol+1];
+        child->state[blankRow][blankCol+1] = 0;
+        start->add_child(child);
+
+      }
+
+
       
      // start->add_child(child);
 }
@@ -65,7 +125,7 @@ void generatekids( State *start){
 int main(){
       State test;
       State child;
-  State *root;
+      State *root;
       test.state[0][0] = 2;
       test.state[0][1] = 8;
       test.state[0][2] = 3;
@@ -78,13 +138,20 @@ int main(){
       test.printState();
       //test.newStates();
       generatekids(&test);
-      generatekids(&test);
+     
      // test.add_child(&child);
 
       //test.get_child().printState();
       root =test.get_child();
       cout<<endl;
       root->printState();
+      
+      root =test.get_child();
+      cout<<endl;
+      root->printState();
+      
+
+
 
       
 
