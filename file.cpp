@@ -7,6 +7,7 @@ class State{
   public:
     int state [3][3];
     int nodeDepth;
+    int Hvalue;
     State *parent;
     vector<State> child;
   State(){};
@@ -22,7 +23,7 @@ class State{
     child.push_back(kid);
     
   }
-  
+
   State get_child(){     
       for(State k: child){
         cout <<endl;
