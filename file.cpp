@@ -33,6 +33,25 @@ class State{
   };
 };
 
+//function to assign hvalue for number of displaced tiles
+void hValueDisplaced(State& state, State goal) {
+    int calcHvalue = 0;
+
+    calcHvalue += state.nodeDepth;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (state.state[i][j] == 0) {
+                continue;
+            }
+            if (state.state[i][j] != goal.state[i][j]) {
+                calcHvalue++;
+            }
+        }
+    }
+
+    state.Hvalue = calcHvalue;
+}
+
 
 /////////
 void generatekids( State *start){
@@ -132,6 +151,7 @@ int main(){
       State test;
       State child;
       State root;
+      State goal;
       test.state[0][0] = 2;
       test.state[0][1] = 8;
       test.state[0][2] = 3;
@@ -144,7 +164,20 @@ int main(){
       test.nodeDepth=0;
       test.printState();
 
+      goal.state[0][0] = 1;
+      goal.state[0][1] = 2;
+      goal.state[0][2] = 3;
+      goal.state[1][0] = 8;
+      goal.state[1][1] = 0;
+      goal.state[1][2] = 4;
+      goal.state[2][0] = 7;
+      goal.state[2][1] = 6;
+      goal.state[2][2] = 5;
+
       generatekids(&test);
+
+      hValueDisplaced(test, goal);
+      cout << "\ntesting hvalue: " << test.Hvalue << endl;
      
      // test.add_child(&child);
 
@@ -164,6 +197,3 @@ int main(){
       
 
 }
-
-
-
