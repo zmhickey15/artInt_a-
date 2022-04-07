@@ -25,11 +25,17 @@ class State{
   }
 
   State get_child(){     
+    // loop for testing to get children 
+/*
       for(State k: child){
         cout <<endl;
         k.printState();
       }
-      return child.back();
+      */
+      State k = child.back();
+      child.pop_back();
+      return k;
+      //return child.back();
   };
 };
 
@@ -183,9 +189,21 @@ int main(){
 
       //test.get_child().printState();
       cout<<endl;
+      root = test.get_child();
+      cout <<endl << "child 1 "<< endl;
+      root.printState();
+      cout <<"child 2" <<endl;
       root =test.get_child();
-      cout<<endl;
-      //root.printState();
+      root.printState();
+      root = test.get_child();
+      cout <<endl << "child 3 "<< endl;
+      root.printState();
+      cout <<"child 4" <<endl;
+      root =test.get_child();
+      root.printState();
+     
+      
+
       
       //root =test.get_child();
       cout<<endl;
