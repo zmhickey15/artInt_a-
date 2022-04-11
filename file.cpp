@@ -2,8 +2,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+
 
 using namespace std;
+using namespace std::chrono;
 
 class State {
 public:
@@ -80,9 +83,10 @@ void hValueDisplaced(State& state, State goal) {
 
 
 /////////
-void generatekids(State* start) {
+int generatekids(State* start) {
 
     /// find the 0 pos k + i
+    int numNodes = 0;
     int blankRow;
     int blankCol;
     for (int k = 0; k < 3; k++)
@@ -110,6 +114,7 @@ void generatekids(State* start) {
         child.state[blankRow][blankCol] = start->state[blankRow][blankCol + 1];
         child.state[blankRow][blankCol + 1] = 0;
         start->add_child(child);
+        numNodes++;
     }
     if (blankCol - 1 > -1) {
         State child; //= new State();
@@ -128,6 +133,8 @@ void generatekids(State* start) {
         child.state[blankRow][blankCol] = start->state[blankRow][blankCol - 1];
         child.state[blankRow][blankCol - 1] = 0;
         start->add_child(child);
+        numNodes++;
+
     }
 
     if (blankRow + 1 < 3) {
@@ -147,6 +154,8 @@ void generatekids(State* start) {
         child.state[blankRow][blankCol] = start->state[blankRow + 1][blankCol];
         child.state[blankRow + 1][blankCol] = 0;
         start->add_child(child);
+        numNodes++;
+
 
 
     }
@@ -167,10 +176,10 @@ void generatekids(State* start) {
         child.state[blankRow][blankCol] = start->state[blankRow - 1][blankCol];
         child.state[blankRow - 1][blankCol] = 0;
         start->add_child(child);
-
+        numNodes++;
     }
 
-
+    return numNodes;
 
     // start->add_child(child);
 }
@@ -217,9 +226,15 @@ void viewOPEN(vector<State> open) {
 }
 
 void aStar(State initial, State goal) {
+
+    auto start = high_resolution_clock::now();
+  
     vector<State> OPEN, CLOSED;
     State BESTNODE, SUCCESSOR, OLD;
     bool putOnOpen = true;
+
+    int numNodes = 0;
+    int nodesExpanded = 0;
 
     hValueDisplaced(initial, goal);
     OPEN.push_back(initial);
@@ -230,12 +245,21 @@ void aStar(State initial, State goal) {
         CLOSED.push_back(BESTNODE);
         if (compareState(BESTNODE, goal)) {
             //PRINT TABLE
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+
+
             cout << "FOUND GOAL\n";
-            cout << "DEPTH: " << BESTNODE.nodeDepth;
+            cout << "DEPTH (D): " << BESTNODE.nodeDepth;
+            cout << "\nNUMBER OF NODES (NG): " << numNodes;
+            cout << "\nNodes expanded (NE): " << nodesExpanded;
+            cout << "\nb* (NG/D): " << numNodes / BESTNODE.nodeDepth;
+            cout << "\nrun time: " << duration.count() <<" microseconds";
             return;
         }
         else {
-            generatekids(&BESTNODE);
+            numNodes += generatekids(&BESTNODE); // number of nodes
+            nodesExpanded++;// nodes expanded
             for (State k : BESTNODE.child) {
                 SUCCESSOR = k;
                 hValueDisplaced(SUCCESSOR, goal);
@@ -252,7 +276,7 @@ void aStar(State initial, State goal) {
                             OLD.nodeDepth = BESTNODE.nodeDepth + 1;
                             hValueDisplaced(OLD, goal);
                             OPEN.push_back(SUCCESSOR);
-                            sort(OPEN.begin(), OPEN.end(), greater<>());
+                            sort(OPEN.begin(), OPEN.end(), greater<State>());
                         }
                     }
                 }
@@ -267,7 +291,7 @@ void aStar(State initial, State goal) {
                             OLD.nodeDepth = BESTNODE.nodeDepth + 1;
                             hValueDisplaced(OLD, goal);
                             OPEN.push_back(SUCCESSOR);
-                            sort(OPEN.begin(), OPEN.end(), greater<>());
+                            sort(OPEN.begin(), OPEN.end(), greater<State>());
                             propagateOld(OLD);
                         }
                     }
@@ -276,7 +300,7 @@ void aStar(State initial, State goal) {
                 if (putOnOpen) {
                     BESTNODE = SUCCESSOR;
                     OPEN.push_back(BESTNODE);
-                    sort(OPEN.begin(), OPEN.end(), greater<>());
+                    sort(OPEN.begin(), OPEN.end(), greater<State>());
                     viewOPEN(OPEN);
                     //BESTNODE.printState();
                     //cin.ignore();
@@ -294,6 +318,7 @@ void aStar(State initial, State goal) {
 
 int main() {
     State initial;
+    State initalTwo;
     State child;
     State root;
     State goal;
@@ -309,6 +334,21 @@ int main() {
     initial.nodeDepth = 0;
     initial.printState();
 
+    //
+    initalTwo.state[0][0] = 2;
+    initalTwo.state[0][1] = 8;
+    initalTwo.state[0][2] = 3;
+    initalTwo.state[1][0] = 1;
+    initalTwo.state[1][1] = 6;
+    initalTwo.state[1][2] = 4;
+    initalTwo.state[2][0] = 0;
+    initalTwo.state[2][1] = 7;
+    initalTwo.state[2][2] = 5;
+    initalTwo.nodeDepth = 0;
+    initalTwo.printState();
+
+    
+
     goal.state[0][0] = 1;
     goal.state[0][1] = 2;
     goal.state[0][2] = 3;
@@ -320,5 +360,6 @@ int main() {
     goal.state[2][2] = 5;
 
     aStar(initial, goal);
+    aStar(initalTwo, goal);
 
 }
