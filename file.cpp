@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
-
+#include <cmath>  
 
 using namespace std;
 using namespace std::chrono;
@@ -79,6 +79,133 @@ void hValueDisplaced(State& state, State goal) {
     }
 
     state.Hvalue = calcHvalue;
+}
+// h value distance to right state
+void hValueDistance(State& state, State goal){
+	int calcHvalue = 0;
+	calcHvalue += state.nodeDepth;
+	int value;
+	for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+				value = state.state[i][j];
+				switch (value){
+					case 1:
+						calcHvalue += abs( i - 0 + j - 0);
+					break;
+					case 2:
+						calcHvalue += abs ( i - 0 + j-1);
+					break;
+					case 3:
+						calcHvalue += abs( i - 0 + j -2);
+					break;
+					case 4:
+						calcHvalue += abs( i - 1 + j-2 );
+					break;
+					case 5:
+						calcHvalue += abs( i - 2 + j -2);
+					break;
+					case 6:
+						calcHvalue += abs( i -2 + j -1);
+					break;
+					case 7:
+						calcHvalue += abs(i - 2 + j - 0);
+					break;
+					case 8: 
+						calcHvalue += abs( i - 1 + j - 0);				
+            break;
+					case 0:
+            calcHvalue += abs (i -1 + j-1);
+					break;					
+					
+							}
+			}
+			}
+	
+	 state.Hvalue = calcHvalue;
+	
+}
+
+// s value
+int sValue(State& state, State goal) {
+    int calcHvalue = 0;
+    calcHvalue += state.nodeDepth;
+
+    if( !(state.state[0][0] + 1 == state.state[0][1] ||
+        state.state[0][0] == 8 && state.state[0][1] == 1))
+        calcHvalue+=2;
+      if( !(state.state[0][1] + 1 == state.state[0][2] ||
+        state.state[0][1] == 8 && state.state[0][2] == 1))
+        calcHvalue+=2;
+      if( !(state.state[0][2] + 1 == state.state[1][2] ||
+        state.state[0][2] == 8 && state.state[1][2] == 1))
+        calcHvalue+=2;
+
+      if( !(state.state[1][2] + 1 == state.state[1][2] ||
+        state.state[1][2] == 8 && state.state[2][2] == 1))
+        calcHvalue+=2;
+      if( !(state.state[2][2] + 1 == state.state[2][1] ||
+        state.state[2][2] == 8 && state.state[2][1] == 1))
+        calcHvalue+=2;
+      if( !(state.state[2][1] + 1 == state.state[2][0] ||
+        state.state[2][1] == 8 && state.state[2][0] == 1))
+        calcHvalue+=2;
+      if( !(state.state[2][0] + 1 == state.state[1][0] ||
+        state.state[2][0] == 8 && state.state[1][0] == 1))
+        calcHvalue+=2;
+      if( !(state.state[1][0] + 1 == state.state[0][0] ||
+        state.state[1][0] == 8 && state.state[0][0] == 1))
+        calcHvalue+=2;
+      if( state.state[1][1] !=1 )
+         calcHvalue+=2;
+  
+        return calcHvalue;
+    
+  }
+
+// hs value 
+void hSvalue (State& state, State goal){
+  int calcHvalue = 0;
+	calcHvalue += state.nodeDepth;
+	int value;
+	for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+				value = state.state[i][j];
+				switch (value){
+					case 1:
+						calcHvalue += abs( i - 0 + j - 0);
+					break;
+					case 2:
+						calcHvalue += abs ( i - 0 + j-1);
+					break;
+					case 3:
+						calcHvalue += abs( i - 0 + j -2);
+					break;
+					case 4:
+						calcHvalue += abs( i - 1 + j-2 );
+					break;
+					case 5:
+						calcHvalue += abs( i - 2 + j -2);
+					break;
+					case 6:
+						calcHvalue += abs( i -2 + j -1);
+					break;
+					case 7:
+						calcHvalue += abs(i - 2 + j - 0);
+					break;
+					case 8: 
+						calcHvalue += abs( i - 1 + j - 0);				
+            break;
+					case 0:
+            calcHvalue += abs (i -1 + j-1);
+					break;					
+					
+							}
+			}
+			}
+        int svalue = sValue(state, goal);
+        svalue = svalue * 3;
+	      calcHvalue += svalue;
+	 state.Hvalue = calcHvalue;
 }
 
 
@@ -225,7 +352,9 @@ void viewOPEN(vector<State> open) {
     cout << endl;
 }
 
-void aStar(State initial, State goal) {
+
+
+void aStar( State initial, State goal, void (*hVal) (State&, State) ){
 
     auto start = high_resolution_clock::now();
   
@@ -236,7 +365,7 @@ void aStar(State initial, State goal) {
     int numNodes = 0;
     int nodesExpanded = 0;
 
-    hValueDisplaced(initial, goal);
+    hVal(initial, goal);
     OPEN.push_back(initial);
 
     while (OPEN.size() != 0) {
@@ -262,7 +391,7 @@ void aStar(State initial, State goal) {
             nodesExpanded++;// nodes expanded
             for (State k : BESTNODE.child) {
                 SUCCESSOR = k;
-                hValueDisplaced(SUCCESSOR, goal);
+                hVal(SUCCESSOR, goal);
                 BESTNODE = SUCCESSOR;
                 for (State m : OPEN) {
                     if (compareState(m, SUCCESSOR)) {
@@ -274,7 +403,7 @@ void aStar(State initial, State goal) {
                         if (OLD.nodeDepth > SUCCESSOR.nodeDepth) {
                             OLD.parent = &BESTNODE;
                             OLD.nodeDepth = BESTNODE.nodeDepth + 1;
-                            hValueDisplaced(OLD, goal);
+                            hVal(OLD, goal);
                             OPEN.push_back(SUCCESSOR);
                             sort(OPEN.begin(), OPEN.end(), greater<State>());
                         }
@@ -289,7 +418,7 @@ void aStar(State initial, State goal) {
                         if (OLD.nodeDepth > SUCCESSOR.nodeDepth) {
                             OLD.parent = &BESTNODE;
                             OLD.nodeDepth = BESTNODE.nodeDepth + 1;
-                            hValueDisplaced(OLD, goal);
+                            hVal(OLD, goal);
                             OPEN.push_back(SUCCESSOR);
                             sort(OPEN.begin(), OPEN.end(), greater<State>());
                             propagateOld(OLD);
@@ -315,7 +444,6 @@ void aStar(State initial, State goal) {
     return;
 
 }
-
 int main() {
     State initial;
     State initalTwo;
@@ -359,7 +487,11 @@ int main() {
     goal.state[2][1] = 6;
     goal.state[2][2] = 5;
 
-    aStar(initial, goal);
-    aStar(initalTwo, goal);
+ 
+    //aStar2(initalTwo, goal, & hValueDistance);
+  aStar(initial, goal, & hValueDisplaced);
+  aStar(initial, goal, & hValueDistance);
+  aStar( initial, goal, &hSvalue);
+	aStar( initalTwo, goal, &hSvalue);
 
 }
