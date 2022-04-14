@@ -223,6 +223,8 @@ void displacedSequenceValue(State& state, State goal) {
             }
         }
     }
+
+    state.Hvalue = calcValue;
 }
 
 void distancSValInverse(State& state, State goal){
