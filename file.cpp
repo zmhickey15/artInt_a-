@@ -163,7 +163,7 @@ int sValue(State& state, State goal) {
   }
 
 // hs value 
-void hSvalue (State& state, State goal){
+void sequenceValue (State& state, State goal){
   int calcHvalue = 0;
 	calcHvalue += state.nodeDepth;
 	int value;
@@ -240,9 +240,11 @@ int generatekids(State* start) {
 
         child.state[blankRow][blankCol] = start->state[blankRow][blankCol + 1];
         child.state[blankRow][blankCol + 1] = 0;
+        child.parent = start;
         start->add_child(child);
         numNodes++;
     }
+    
     if (blankCol - 1 > -1) {
         State child; //= new State();
         //cout << "2";
@@ -259,6 +261,7 @@ int generatekids(State* start) {
 
         child.state[blankRow][blankCol] = start->state[blankRow][blankCol - 1];
         child.state[blankRow][blankCol - 1] = 0;
+        child.parent = start;
         start->add_child(child);
         numNodes++;
 
@@ -280,6 +283,7 @@ int generatekids(State* start) {
 
         child.state[blankRow][blankCol] = start->state[blankRow + 1][blankCol];
         child.state[blankRow + 1][blankCol] = 0;
+        child.parent = start;
         start->add_child(child);
         numNodes++;
 
@@ -302,6 +306,7 @@ int generatekids(State* start) {
 
         child.state[blankRow][blankCol] = start->state[blankRow - 1][blankCol];
         child.state[blankRow - 1][blankCol] = 0;
+        child.parent = start;
         start->add_child(child);
         numNodes++;
     }
@@ -372,12 +377,14 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
         BESTNODE = OPEN.back();
         OPEN.pop_back();
         CLOSED.push_back(BESTNODE);
+  
         if (compareState(BESTNODE, goal)) {
             //PRINT TABLE
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-
-
+            
+            //
+            
             cout << "FOUND GOAL\n";
             cout << "DEPTH (D): " << BESTNODE.nodeDepth;
             cout << "\nNUMBER OF NODES (NG): " << numNodes;
@@ -444,6 +451,7 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
     return;
 
 }
+
 int main() {
     State initial;
     State initalTwo;
@@ -460,6 +468,7 @@ int main() {
     initial.state[2][1] = 5;
     initial.state[2][2] = 3;
     initial.nodeDepth = 0;
+    initial.parent = nullptr;
     initial.printState();
 
     //
@@ -473,6 +482,7 @@ int main() {
     initalTwo.state[2][1] = 7;
     initalTwo.state[2][2] = 5;
     initalTwo.nodeDepth = 0;
+    initalTwo.parent = nullptr;
     initalTwo.printState();
 
     
@@ -489,9 +499,14 @@ int main() {
 
  
     //aStar2(initalTwo, goal, & hValueDistance);
-  aStar(initial, goal, & hValueDisplaced);
-  aStar(initial, goal, & hValueDistance);
-  aStar( initial, goal, &hSvalue);
-	aStar( initalTwo, goal, &hSvalue);
+  
+  //aStar(initial, goal, & hValueDisplaced);
+  aStar(initalTwo, goal, & hValueDistance);
+
+	aStar( initalTwo, goal, &sequenceValue);
+  aStar( initial, goal, &sequenceValue);
+	aStar( initalTwo, goal, &hValueDistance);
+  aStar( initial, goal, &hValueDistance);
+
 
 }
