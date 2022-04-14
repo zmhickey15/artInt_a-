@@ -223,10 +223,10 @@ void displacedSequenceValue(State& state, State goal) {
             }
         }
     }
-
     state.Hvalue = calcValue;
 }
 
+// distance *3 + s value
 void distancSValInverse(State& state, State goal){
   int calcHvalue = 0;
 	calcHvalue += state.nodeDepth;
@@ -271,6 +271,52 @@ void distancSValInverse(State& state, State goal){
 
     state.Hvalue = calcHvalue;
 
+}
+
+
+void distanceSequence(State& state, State goal){ //distance sequence 
+  hSvalue(state, goal);
+  int calcHvalue = state.Hvalue;
+	calcHvalue += state.nodeDepth;
+	int value;
+	for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+				value = state.state[i][j];
+				switch (value){
+					case 1:
+						calcHvalue += abs( i - 0 + j - 0);
+					break;
+					case 2:
+						calcHvalue += abs ( i - 0 + j-1);
+					break;
+					case 3:
+						calcHvalue += abs( i - 0 + j -2);
+					break;
+					case 4:
+						calcHvalue += abs( i - 1 + j-2 );
+					break;
+					case 5:
+						calcHvalue += abs( i - 2 + j -2);
+					break;
+					case 6:
+						calcHvalue += abs( i -2 + j -1);
+					break;
+					case 7:
+						calcHvalue += abs(i - 2 + j - 0);
+					break;
+					case 8: 
+						calcHvalue += abs( i - 1 + j - 0);				
+            break;
+					case 0:
+            calcHvalue += abs (i -1 + j-1);
+					break;					
+					
+							}
+			}
+			}
+	
+	 state.Hvalue = calcHvalue;
+  
 }
 /////////
 int generatekids(State* start) {
@@ -451,6 +497,7 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
             cout << "\nNodes expanded (NE): " << nodesExpanded;
             cout << "\nb* (NG/D): " << numNodes / BESTNODE.nodeDepth;
             cout << "\nrun time: " << duration.count() <<" microseconds";
+            cout<<endl <<endl;
             return;
         }
         else {
@@ -497,7 +544,7 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
                     BESTNODE = SUCCESSOR;
                     OPEN.push_back(BESTNODE);
                     sort(OPEN.begin(), OPEN.end(), greater<State>());
-                    viewOPEN(OPEN);
+                    //viewOPEN(OPEN);
                     //BESTNODE.printState();
                     //cin.ignore();
                 }
@@ -511,6 +558,7 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
     return;
 
 }
+
 int main() {
     State initial;
     State initalTwo;
@@ -555,9 +603,29 @@ int main() {
     goal.state[2][2] = 5;
 
  
-    //aStar2(initalTwo, goal, & hValueDistance);
+cout << endl << endl << "hvalue displaced" << endl << endl;
   aStar(initial, goal, & hValueDisplaced);
   aStar(initial, goal, & hValueDistance);
+ 
+cout << endl << endl << "hSvalue" << endl << endl;
   aStar( initial, goal, &hSvalue);
   aStar( initalTwo, goal, &hSvalue);
+ 
+cout << endl << endl << "hValueDistance" << endl << endl;
+  aStar( initial, goal, &hValueDistance);
+  aStar( initalTwo, goal, &hValueDistance);
+ 
+cout << endl << endl << "distancSValInverse" << endl << endl;
+   aStar( initial, goal, &distancSValInverse);
+  aStar( initalTwo, goal, &distancSValInverse);
+
+  cout << endl << endl << "displaced sequence" << endl << endl;
+   aStar( initial, goal, &displacedSequenceValue);
+  aStar( initalTwo, goal, &displacedSequenceValue);
+
+    cout << endl << endl << "distanceSequence" << endl << endl;
+   aStar( initial, goal, &distanceSequence);
+  aStar( initalTwo, goal, &distanceSequence);
+
+
 }
