@@ -225,6 +225,51 @@ void displacedSequenceValue(State& state, State goal) {
     }
 }
 
+void distancSValInverse(State& state, State goal){
+  int calcHvalue = 0;
+	calcHvalue += state.nodeDepth;
+	int value;
+	for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+				value = state.state[i][j];
+				switch (value){
+					case 1:
+						calcHvalue += abs( i - 0 + j - 0);
+					break;
+					case 2:
+						calcHvalue += abs ( i - 0 + j-1);
+					break;
+					case 3:
+						calcHvalue += abs( i - 0 + j -2);
+					break;
+					case 4:
+						calcHvalue += abs( i - 1 + j-2 );
+					break;
+					case 5:
+						calcHvalue += abs( i - 2 + j -2);
+					break;
+					case 6:
+						calcHvalue += abs( i -2 + j -1);
+					break;
+					case 7:
+						calcHvalue += abs(i - 2 + j - 0);
+					break;
+					case 8: 
+						calcHvalue += abs( i - 1 + j - 0);				
+            break;
+					case 0:
+            calcHvalue += abs (i -1 + j-1);
+					break;					
+					
+							}
+			}
+			}
+      calcHvalue = calcHvalue *3;
+      calcHvalue += sValue(state,goal);
+
+    state.Hvalue = calcHvalue;
+
+}
 /////////
 int generatekids(State* start) {
 
