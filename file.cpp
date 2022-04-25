@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>  
+#include <iomanip>
 
 using namespace std;
 using namespace std::chrono;
@@ -15,6 +16,7 @@ public:
     int Hvalue;
     State* parent;
     vector<State> child;
+    vector<State> parents;
     State() {};
 
     void printState() {
@@ -26,6 +28,10 @@ public:
     }
     void add_child(State kid) {
         child.push_back(kid);
+
+    }
+    void add_parent(State kid) { /// new parents 
+        parents.push_back(kid);
 
     }
 
@@ -371,6 +377,7 @@ int generatekids(State* start) {
         child.state[blankRow][blankCol - 1] = 0;
         child.parent = start;
         start->add_child(child);
+     
         numNodes++;
 
     }
@@ -393,6 +400,7 @@ int generatekids(State* start) {
         child.state[blankRow + 1][blankCol] = 0;
         child.parent = start;
         start->add_child(child);
+ 
         numNodes++;
 
 
@@ -416,6 +424,7 @@ int generatekids(State* start) {
         child.state[blankRow - 1][blankCol] = 0;
         child.parent = start;
         start->add_child(child);
+
         numNodes++;
     }
 
@@ -467,7 +476,7 @@ void viewOPEN(vector<State> open) {
 
 
 
-void aStar( State initial, State goal, void (*hVal) (State&, State) ){
+void aStar( State initial, State goal, void (*hVal) (State&, State) , int function ){
 
     auto start = high_resolution_clock::now();
   
@@ -481,23 +490,48 @@ void aStar( State initial, State goal, void (*hVal) (State&, State) ){
     hVal(initial, goal);
     OPEN.push_back(initial);
 
+  int k=0;
+
     while (OPEN.size() != 0) {
         BESTNODE = OPEN.back();
         OPEN.pop_back();
         CLOSED.push_back(BESTNODE);
+        
+
         if (compareState(BESTNODE, goal)) {
             //PRINT TABLE
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
 
 
-            cout << "FOUND GOAL\n";
+           /* cout << "FOUND GOAL\n";
             cout << "DEPTH (D): " << BESTNODE.nodeDepth;
             cout << "\nNUMBER OF NODES (NG): " << numNodes;
             cout << "\nNodes expanded (NE): " << nodesExpanded;
             cout << "\nb* (NG/D): " << numNodes / BESTNODE.nodeDepth;
-            cout << "\nrun time: " << duration.count() <<" microseconds";
-            cout<<endl <<endl;
+            cout << "\nrun time: " << duration.count() <<" microseconds"<<endl;*/
+
+            double bstar =  numNodes / BESTNODE.nodeDepth;
+           
+            //cout << "1" <<"        "<< duration.count() << "  "<<numNodes <<"   " << nodesExpanded <<"    " << BESTNODE.nodeDepth <<"  " <<bstar <<"   " <<BESTNODE.nodeDepth <<endl;
+            cout 
+              <<left
+              << setw(12)
+              << function
+              << setw(23)
+              << duration.count() 
+              << setw(10)
+              << numNodes
+              << setw(10)//
+              << nodesExpanded
+              << setw(10)
+              << BESTNODE.nodeDepth
+              << setw(8)
+              << bstar
+              << setw(8)
+              << BESTNODE.nodeDepth<< endl<< endl;
+
+ 
             return;
         }
         else {
@@ -575,7 +609,7 @@ int main() {
     initial.state[2][1] = 5;
     initial.state[2][2] = 3;
     initial.nodeDepth = 0;
-    initial.printState();
+   // initial.printState();
 
     //
     initalTwo.state[0][0] = 2;
@@ -588,7 +622,7 @@ int main() {
     initalTwo.state[2][1] = 7;
     initalTwo.state[2][2] = 5;
     initalTwo.nodeDepth = 0;
-    initalTwo.printState();
+    //initalTwo.printState();
 
     
 
@@ -602,30 +636,25 @@ int main() {
     goal.state[2][1] = 6;
     goal.state[2][2] = 5;
 
+ cout << " initial state 1 " << endl; 
+ cout << "Function    ET (microseconds)      NG        NE        D         b*      TP"<<endl;
  
-cout << endl << endl << "hvalue displaced" << endl << endl;
-  aStar(initial, goal, & hValueDisplaced);
-  aStar(initial, goal, & hValueDistance);
- 
-cout << endl << endl << "hSvalue" << endl << endl;
-  aStar( initial, goal, &hSvalue);
-  aStar( initalTwo, goal, &hSvalue);
- 
-cout << endl << endl << "hValueDistance" << endl << endl;
-  aStar( initial, goal, &hValueDistance);
-  aStar( initalTwo, goal, &hValueDistance);
- 
-cout << endl << endl << "distancSValInverse" << endl << endl;
-   aStar( initial, goal, &distancSValInverse);
-  aStar( initalTwo, goal, &distancSValInverse);
+   aStar(initial, goal, & hValueDisplaced, 1);
+   aStar( initial, goal, &hSvalue, 2);
+   aStar( initial, goal, &hValueDistance, 3);
+   aStar( initial, goal, &distancSValInverse, 4);
+   aStar( initial, goal, &displacedSequenceValue, 5);
+   aStar( initial, goal, &distanceSequence, 6);
+  
 
-  cout << endl << endl << "displaced sequence" << endl << endl;
-   aStar( initial, goal, &displacedSequenceValue);
-  aStar( initalTwo, goal, &displacedSequenceValue);
-
-    cout << endl << endl << "distanceSequence" << endl << endl;
-   aStar( initial, goal, &distanceSequence);
-  aStar( initalTwo, goal, &distanceSequence);
+   cout << endl << endl << endl<< " initial state 2 " << endl; 
+   cout << "Function    ET (microseconds)      NG        NE        D         b*      TP"<<endl;
+   aStar(initalTwo, goal, & hValueDisplaced, 1);
+   aStar( initalTwo, goal, &hSvalue, 2);
+   aStar( initalTwo, goal, &hValueDistance, 3);
+   aStar( initalTwo, goal, &distancSValInverse, 4);
+     aStar( initalTwo, goal, &displacedSequenceValue, 5);
+     aStar( initalTwo, goal, &distanceSequence, 6);
 
 
 }
