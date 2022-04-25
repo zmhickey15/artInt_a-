@@ -638,23 +638,23 @@ int main() {
 
  cout << " initial state 1 " << endl; 
  cout << "Function    ET (microseconds)      NG        NE        D         b*      TP"<<endl;
- 
+     aStar(initalTwo, goal, & hValueDisplaced, 1);
+   aStar( initalTwo, goal, &hSvalue, 2);
+   aStar( initalTwo, goal, &hValueDistance, 3);
+   aStar( initalTwo, goal, &distancSValInverse, 4);
+     aStar( initalTwo, goal, &displacedSequenceValue, 5);
+     aStar( initalTwo, goal, &distanceSequence, 6);
+
+   cout << endl << endl << endl<< " initial state 2 " << endl; 
+   cout << "Function    ET (microseconds)      NG        NE        D         b*      TP"<<endl;
+    
    aStar(initial, goal, & hValueDisplaced, 1);
    aStar( initial, goal, &hSvalue, 2);
    aStar( initial, goal, &hValueDistance, 3);
    aStar( initial, goal, &distancSValInverse, 4);
    aStar( initial, goal, &displacedSequenceValue, 5);
    aStar( initial, goal, &distanceSequence, 6);
-  
 
-   cout << endl << endl << endl<< " initial state 2 " << endl; 
-   cout << "Function    ET (microseconds)      NG        NE        D         b*      TP"<<endl;
-   aStar(initalTwo, goal, & hValueDisplaced, 1);
-   aStar( initalTwo, goal, &hSvalue, 2);
-   aStar( initalTwo, goal, &hValueDistance, 3);
-   aStar( initalTwo, goal, &distancSValInverse, 4);
-     aStar( initalTwo, goal, &displacedSequenceValue, 5);
-     aStar( initalTwo, goal, &distanceSequence, 6);
 
 
 }
